@@ -8,7 +8,22 @@ import mongoose from "mongoose";
 import {connectToSocket} from './src/controllers/socketManager.js'
 import cors from "cors";
 import router from './src/routes/user.routes.js'
-app.use(cors());
+//config for cors for production editing
+const allowedOrigins = [
+    "https://video-call-frontend-w9cp.onrender.com",
+    "http://localhost:5173"
+];
+
+app.use(cors({
+    origin: (origin, callback) => {
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error("Not allowed by CORS"));
+        }
+    },
+    credentials: true
+}));
 app.use(express.json({limit:"40kb" }));
 app.use(express.urlencoded({limit:"40kb" , extended:true}));
 const server = createServer(app); // now app is working in server 
