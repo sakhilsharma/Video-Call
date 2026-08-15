@@ -3,7 +3,7 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
-
+import CircularProgress from "@mui/material/CircularProgress";
 import Link from '@mui/material/Link';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
@@ -36,8 +36,8 @@ export default function Auth() {
     const [open, setOpen] = React.useState(false)
 
     //functions from authContext 
-    const { handleRegister, handleLogin } = React.useContext(AuthContext);
-
+    const { handleRegister, handleLogin, isLoading } = React.useContext(AuthContext);
+    console.log("Auth component:", isLoading);
     let handleAuth = async () => {
         try {
             if (formState === 0) {
@@ -170,8 +170,13 @@ export default function Auth() {
                                         variant="contained"
                                         sx={{ mt: 3, mb: 2 }}
                                         onClick={handleAuth}
+                                        disabled={(!username || !password)}
                                     >
-                                        {formState === 0 ? "Login " : "Register"}
+                                        {isLoading ? (
+                                            <CircularProgress size={24} color="inherit" />
+                                        ) : (
+                                            formState === 0 ? "Login" : "Register"
+                                        )}
                                     </Button>
 
                                 </Box>

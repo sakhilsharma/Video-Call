@@ -58,6 +58,7 @@ export default function VideoMeetComponent() {
     let [videos, setVideos] = useState([]);
     const videoRef = useRef([]); //list o f video  ref 
 
+
     //if (isChrome() === false) {
     //    //webRTC works on chromium based browser : basically all browser
     //}
@@ -311,7 +312,13 @@ export default function VideoMeetComponent() {
                                 console.log("FOUND EXISTING - Updating stream");
                                 //Replaces the old stream with the new one for that socketId.
                                 const updatedVideos = currentVideos.map(video =>
-                                    video.socketId === socketListId ? { ...video, stream: event.stream } : video
+                                    video.socketId === socketListId
+                                        ? {
+                                            ...video,
+                                            stream: event.stream,
+
+                                        }
+                                        : video
                                 );
                                 videoRef.current = updatedVideos;
                                 console.log("Updated videos:", updatedVideos);
@@ -422,7 +429,9 @@ export default function VideoMeetComponent() {
             }
         } catch (e) { console.log("Error stopping display media tracks:", e) }
         //now after clearing all the tracks we will make oue localStream as 
-        window.localStream = stream
+        window.localStream = stream;
+
+
         if (localVideoRef.current) {
             localVideoRef.current.srcObject = stream
         }
@@ -442,7 +451,7 @@ export default function VideoMeetComponent() {
         }
 
         stream.getTracks().forEach(track => track.onended = () => {
-            setScreen(false)
+            setScreen(false);
 
             try {
                 if (localVideoRef.current && localVideoRef.current.srcObject) {
@@ -574,6 +583,12 @@ export default function VideoMeetComponent() {
                                         size="small"
                                         value={message}
                                         onChange={(e) => setMessage(e.target.value)}
+                                        onKeyDown={(e) => {
+                                            if (e.key === "Enter") {
+                                                e.preventDefault();
+                                                sendMessage();
+                                            }
+                                        }}
                                     />
                                     <Button variant="contained" onClick={sendMessage}>Send</Button>
                                 </div>
@@ -605,6 +620,7 @@ export default function VideoMeetComponent() {
                                 ))
                             }
                         </div>
+
 
                         <div className="selfViewWrapper">
                             <video className='meetUserVideo' ref={localVideoRef} autoPlay muted></video>

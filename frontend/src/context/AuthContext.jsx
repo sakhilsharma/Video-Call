@@ -15,8 +15,7 @@ const client = axios.create({
 export const AuthProvider = ({ children }) => { //childern: like what are we providing inside the rapper
 
     const authContext = useContext(AuthContext);
-    
-
+    const [isLoading, setIsLoading] = useState(false);
     const [userData, setUserData] = useState(authContext);
 
 
@@ -24,12 +23,12 @@ export const AuthProvider = ({ children }) => { //childern: like what are we pro
 
     const handleRegister = async (name, username, password) => {
         try {
+            setIsLoading(true);
             let request = await client.post("/register", {
                 name: name,
                 username: username,
                 password: password
             })
-
 
             if (request.status === httpStatus.CREATED) {
                 return request.data.message;
@@ -37,24 +36,32 @@ export const AuthProvider = ({ children }) => { //childern: like what are we pro
         } catch (err) {
             throw err;
         }
+        finally {
+            setIsLoading(false);
+        }
     }
 
     const handleLogin = async (username, password) => {
         try {
+            setIsLoading(true);
             let request = await client.post("/login", {
                 username: username,
                 password: password
             });
+            //Prmoise selved after 3 second--> test Loader
+            // await new Promise(resolve => setTimeout(resolve, 3000));
 
-           
             console.log(request.data)
 
             if (request.status === httpStatus.OK) {
+
                 localStorage.setItem("token", request.data.token);
                 router("/home")
             }
         } catch (err) {
             throw err;
+        } finally {
+            setIsLoading(false);
         }
     }
 
@@ -96,7 +103,7 @@ export const AuthProvider = ({ children }) => { //childern: like what are we pro
 
 
     const data = {
-        userData, setUserData, addToUserHistory, getHistoryOfUser, handleRegister, handleLogin
+        userData, setUserData, addToUserHistory, getHistoryOfUser, handleRegister, handleLogin, isLoading
     }
 
     return (
