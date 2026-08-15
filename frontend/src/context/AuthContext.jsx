@@ -16,7 +16,7 @@ export const AuthProvider = ({ children }) => { //childern: like what are we pro
 
     const authContext = useContext(AuthContext);
     const [isLoading, setIsLoading] = useState(false);
-    const [userData, setUserData] = useState(authContext);
+    const [userData, setUserData] = useState(null);
     useEffect(() => {
         const token = localStorage.getItem("token");
 

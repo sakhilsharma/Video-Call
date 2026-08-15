@@ -8,10 +8,11 @@ import { AuthContext } from '../context/AuthContext';
 
 function Home() {
     const navigate = useNavigate();
-    const { addToUserHistory, userData ,setUserData} = useContext(AuthContext);
+    const { addToUserHistory, userData, setUserData } = useContext(AuthContext);
     const [meetingCode, setMeetingCode] = useState("");
     const [copied, setCopied] = useState(false);
-    console.log(userData.name);
+    //direct console.log(userData.name)-> shows error because null.name
+    console.log(userData?.name);
     // 🔐 Random code generator
     const generateMeetingCode = (length = 8) => {
         const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -62,7 +63,7 @@ function Home() {
 
             <div className="meetContianer">
                 <div className="leftPanel">
-                    {userData.name != undefined ? (
+                    {userData?.username ? (
                         <Box
                             sx={{
                                 display: "flex",
@@ -87,7 +88,7 @@ function Home() {
                                     flexShrink: 0,
                                 }}
                             >
-                                {userData.name?.charAt(0).toUpperCase()}
+                                {userData?.name?.charAt(0).toUpperCase()}
                             </Avatar>
 
                             <Typography

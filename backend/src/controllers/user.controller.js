@@ -22,7 +22,14 @@ const login = async (req, res) => {
       user.token = token;
       await user.save();
 
-      return res.status(httpStatus.OK).json({ token: token })
+ ///with tokne also return name and username
+      return res.status(httpStatus.OK).json({
+        token: token,
+        user: {
+          name: user.name,
+          username: user.username
+        }
+      });
     }
   }
   catch (err) {
@@ -61,12 +68,12 @@ const register = async (req, res) => {
 //extra functions of user History
 const getUserHistory = async (req, res) => {
   const { token } = req.query;
-  
+
 
   try {
     const user = await User.findOne({ token: token });
     const meetings = await Meeting.find({ user_id: user.username })
-   
+
     res.json(meetings)
   } catch (e) {
     res.json({ message: `Something went wrong ${e}` })
@@ -75,7 +82,7 @@ const getUserHistory = async (req, res) => {
 
 const addToHistory = async (req, res) => {
   const { token, meeting_code } = req.body;
-   console.log(req.body.token);
+  console.log(req.body.token);
   try {
     const user = await User.findOne({ token: token });
 
@@ -91,5 +98,38 @@ const addToHistory = async (req, res) => {
     res.json({ message: `Something went wrong ${e}` })
   }
 }
+const getUser = async (req, res) => {
+    try {
+        const { token } = req.query;
 
-export { register, login, getUserHistory, addToHistory }
+        if (!token) {
+            return res.status(400).json({
+                message: "Token is required"
+            });
+        }
+
+        const user = await User.findOne({ token });
+
+        if (!user) {
+            return res.status(401).json({
+                message: "Invalid token"
+            });
+        }
+
+        return res.status(200).json({
+            user: {
+                name: user.name,
+                username: user.username
+            }
+        });
+
+    } catch (err) {
+        console.log(err);
+
+        return res.status(500).json({
+            message: "Server error"
+        });
+    }
+};
+
+export { register, login, getUserHistory, addToHistory ,getUser}
