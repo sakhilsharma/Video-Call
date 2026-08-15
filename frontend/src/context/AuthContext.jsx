@@ -1,6 +1,6 @@
 import axios from "axios";
 import httpStatus from "http-status";
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState  ,useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import server from "../environment";
 
@@ -17,7 +17,30 @@ export const AuthProvider = ({ children }) => { //childern: like what are we pro
     const authContext = useContext(AuthContext);
     const [isLoading, setIsLoading] = useState(false);
     const [userData, setUserData] = useState(authContext);
+    useEffect(() => {
+        const token = localStorage.getItem("token");
 
+        if (!token) return;
+
+        const getUser = async () => {
+            try {
+                const response = await client.get("/getUser", {
+                    params: {
+                        token: token
+                    }
+                });
+
+                setUserData(response.data.user);
+
+            } catch (err) {
+                console.log("Could not restore user", err);
+                localStorage.removeItem("token");
+                setUserData(null);
+            }
+        };
+
+        getUser();
+    }, []);
 
     const router = useNavigate();
 
@@ -56,6 +79,8 @@ export const AuthProvider = ({ children }) => { //childern: like what are we pro
             if (request.status === httpStatus.OK) {
 
                 localStorage.setItem("token", request.data.token);
+                console.log()
+                setUserData(request.data.user);//user.name and user.username
                 router("/home")
             }
         } catch (err) {
@@ -105,6 +130,7 @@ export const AuthProvider = ({ children }) => { //childern: like what are we pro
     const data = {
         userData, setUserData, addToUserHistory, getHistoryOfUser, handleRegister, handleLogin, isLoading
     }
+
 
     return (
         <AuthContext.Provider value={data}>

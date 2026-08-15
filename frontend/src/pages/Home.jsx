@@ -2,16 +2,16 @@ import React, { useContext, useState } from 'react';
 import withAuth from '../../utils/withauth';
 import { useNavigate } from 'react-router-dom';
 import '../App.css';
-import { Button, IconButton, TextField, Typography } from '@mui/material';
+import { Button, IconButton, TextField, Typography, Paper, Avatar, Box, Stack } from '@mui/material';
 import HistoryIcon from '@mui/icons-material/History';
 import { AuthContext } from '../context/AuthContext';
 
 function Home() {
     const navigate = useNavigate();
-    const { addToUserHistory } = useContext(AuthContext);
+    const { addToUserHistory, userData ,setUserData} = useContext(AuthContext);
     const [meetingCode, setMeetingCode] = useState("");
     const [copied, setCopied] = useState(false);
-
+    console.log(userData.name);
     // 🔐 Random code generator
     const generateMeetingCode = (length = 8) => {
         const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -50,7 +50,7 @@ function Home() {
                     {localStorage.getItem("token") ? (
                         <Button onClick={() => {
                             localStorage.removeItem("token");
-                            navigate("/auth");
+                            navigate("/auth")
                         }}>
                             Log-Out
                         </Button>
@@ -62,7 +62,61 @@ function Home() {
 
             <div className="meetContianer">
                 <div className="leftPanel">
+                    {userData.name != undefined ? (
+                        <Box
+                            sx={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 1,
+                                width: "100%",
+                                maxWidth: "300px",
+                                height: "48px",
+                                px: 1.2,
+                                borderRadius: 2,
+                                background: "#f5f3ff",
+                                border: "1px solid #ede9fe",
+                                boxSizing: "border-box",
+                            }}
+                        >
+                            <Avatar
+                                sx={{
+                                    width: 30,
+                                    height: 30,
+                                    bgcolor: "#5e42c6",
+                                    fontSize: "0.8rem",
+                                    flexShrink: 0,
+                                }}
+                            >
+                                {userData.name?.charAt(0).toUpperCase()}
+                            </Avatar>
+
+                            <Typography
+                                sx={{
+                                    fontSize: "0.85rem",
+                                    fontWeight: 600,
+                                    color: "#1e1b4b",
+                                    overflow: "hidden",
+                                    textOverflow: "ellipsis",
+                                    whiteSpace: "nowrap",
+                                }}
+                            >
+                                {userData.username}
+                            </Typography>
+                        </Box>
+                    ) : (
+                        <Typography
+                            sx={{
+                                fontSize: "0.9rem",
+                                fontWeight: 600,
+                                color: "#5e42c6",
+                                mb: 2,
+                            }}
+                        >
+                            Login First
+                        </Typography>
+                    )}
                     <h2 className="Heading">Providing Video Call To Call Your Loved Ones.</h2>
+
                     <h3>Enter Meeting Code or Generate:</h3>
 
                     <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
@@ -78,7 +132,7 @@ function Home() {
                     <div style={{ marginTop: "6px" }}>
                         <Typography
                             variant="caption"
-                            style={{ color: "#5e42c6", cursor: "pointer" ,fontSize:"1rem" }}
+                            style={{ color: "#5e42c6", cursor: "pointer", fontSize: "1rem" }}
                             onClick={handleGenerateClick}
                         >
                             Generate Meeting code
